@@ -6,8 +6,12 @@ from .models import Post
 # Create your views here.
 
 
-def blog_view(request):
+def blog_view(request, **kwargs):
     posts = Post.objects.filter(status=True, published_date__lte=timezone.now())
+    if kwargs.get("cat_name"):
+        posts = posts.filter(category__name = kwargs["cat_name"])
+    elif kwargs.get("author_name"):
+        posts = posts.filter(author__username = kwargs["author_name"])
     context = {"posts": posts}
     return render(request, "blog/blog-home.html", context=context)
 
@@ -33,4 +37,13 @@ def blog_single(request, pid):
         "next_post": next_post
     }
     return render(request, "blog/blog-single.html", context=context)
+
+
+def blog_search(request):
+    posts = Post.objects.filter(status=True, published_date__lte=timezone.now())
+    if request.method == "GET":
+        if s := request.GET.get("s"):
+            posts = posts.filter(content__contains=s)
+    context = {"posts": posts}
+    return render(request, "blog/blog-home.html", context=context)
     

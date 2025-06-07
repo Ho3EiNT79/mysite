@@ -11,7 +11,7 @@ def latestpost(arg=3):
 
 
 @register.inclusion_tag("blog/blog-category.html")
-def categoriespost(arg=3):
+def categoriespost():
     posts = Post.objects.filter(status=True).order_by("-published_date")
     categories = Category.objects.all()
     cat_dict = {}
